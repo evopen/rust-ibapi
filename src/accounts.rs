@@ -1,4 +1,5 @@
 use log::error;
+use serde::{Deserialize, Serialize};
 
 use crate::client::transport::GlobalResponseIterator;
 use crate::contracts::Contract;
@@ -8,7 +9,7 @@ use crate::{server_versions, Client, Error};
 mod decoders;
 mod encoders;
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Position {
     /// Account holding position
     pub account: String,

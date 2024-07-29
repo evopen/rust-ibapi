@@ -3,6 +3,8 @@ use std::fmt::{self, Debug};
 
 use log::{error, info};
 
+use serde::{Deserialize, Serialize};
+
 use crate::client::transport::{GlobalResponseIterator, ResponseIterator};
 use crate::contracts::{ComboLeg, ComboLegOpenClose, Contract, DeltaNeutralContract, SecurityType};
 use crate::messages::{IncomingMessages, OutgoingMessages};
@@ -24,7 +26,7 @@ pub use crate::contracts::TagValue;
 
 const COMPETE_AGAINST_BEST_OFFSET_UP_TO_MID: Option<f64> = Some(f64::INFINITY);
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 /// Order describes the order.
 pub struct Order {
     /// The API client's order id.
@@ -583,7 +585,7 @@ impl Order {
 /// For general account types, a SELL order will be able to enter a short position automatically if the order quantity is larger than your current long position.
 /// SSHORT is only supported for institutional account configured with Long/Short account segments or clearing with a separate account.
 /// SLONG is available in specially-configured institutional accounts to indicate that long position not yet delivered is being sold.
-#[derive(Clone, Debug, Default, PartialEq, Eq, Copy)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Copy, Serialize, Deserialize)]
 pub enum Action {
     #[default]
     Buy,
@@ -634,7 +636,7 @@ impl Action {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum Rule80A {
     Individual,
     Agency,
@@ -700,12 +702,12 @@ pub enum AuctionStrategy {
     Transparent,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OrderComboLeg {
     price: Option<f64>,
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub enum OrderCondition {
     Price = 1,
     Time = 3,
@@ -742,14 +744,14 @@ impl From<i32> for OrderCondition {
 }
 
 /// Stores Soft Dollar Tier information.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct SoftDollarTier {
     pub name: String,
     pub value: String,
     pub display_name: String,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OrderData {
     /// The order's unique id
     pub order_id: i32,
@@ -762,7 +764,7 @@ pub struct OrderData {
 }
 
 /// Provides an active order's current state.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OrderState {
     /// The order's current status
     pub status: String,
@@ -802,7 +804,7 @@ pub struct OrderState {
 /// Available for institutional clients to determine if this order is to open or close a position.
 /// When Action = "BUY" and OpenClose = "O" this will open a new position.
 /// When Action = "BUY" and OpenClose = "C" this will close and existing short position.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub enum OrderOpenClose {
     Open,
     Close,
@@ -967,7 +969,7 @@ impl From<CommissionReport> for OrderNotification {
 }
 
 /// Contains all relevant information on the current status of the order execution-wise (i.e. amount filled and pending, filling price, etc.).
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct OrderStatus {
     /// The order's client id.
     pub order_id: i32,
@@ -1400,7 +1402,7 @@ pub(crate) fn completed_orders(client: &Client, api_only: bool) -> Result<OrderD
 }
 
 /// Enumerates possible results from querying an [Order].
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum OrderDataResult {
     OrderData(Box<OrderData>),
     OrderStatus(Box<OrderStatus>),
